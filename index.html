@@ -729,7 +729,8 @@
                 return;
             }
 
-            const currentEncryptorLogic = currentEncryptor === 'caijibei' ? caijibeiEncryptor : tudouEncryptor;
+            const currentEncryptorLogic = currentEncryptor === 'caijibei' ? caijibeiEncryptor : 
+                                          currentEncryptor === 'caijibeiPro' ? caijibeiProEncryptor : tudouEncryptor;
             
             resultArea.style.display = 'block';
             
