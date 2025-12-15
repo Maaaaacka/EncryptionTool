@@ -549,9 +549,9 @@
                     const num1 = Math.floor(uniCode / 10000);
                     const num2 = Math.floor((uniCode % 10000) / 100);
                     const num3 = uniCode % 100;
-                    cipher.push('土'.repeat(num1 + 1));
-                    cipher.push('豆'.repeat(num2 + 1));
-                    cipher.push('土'.repeat(num3 + 1));
+                    cipher.push('小'.repeat(num1 + 1));
+                    cipher.push('土'.repeat(num2 + 1));
+                    cipher.push('豆'.repeat(num3 + 1));
                 }
                 return cipher.join('');
             },
@@ -579,7 +579,7 @@
                         const segDou = segments[i+1];
                         const segTu2 = segments[i+2];
                         
-                        if (segTu[0] !== '土' || segDou[0] !== '豆' || segTu2[0] !== '土') {
+                        if (segTu[0] !== '小' || segDou[0] !== '土' || segTu2[0] !== '豆') {
                             continue;
                         }
                         
