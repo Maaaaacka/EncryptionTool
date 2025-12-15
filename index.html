@@ -484,7 +484,7 @@
             });
         });
 
-        // 蔡机杯加密Pro逻辑（重构）
+        // 蔡机杯加密Pro逻辑
         const caijibeiProEncryptor = {
             encrypt: function(plainText) {
                 let cipher = [];
@@ -541,11 +541,11 @@
 
                 // 定义解压映射（与压缩映射相反）
                 const decompressMap = [
-                    { from: '吧', to: 'BB' },
-                    { from: 'B', to: 'bb' },
-                    { from: 'b', to: '贝贝' },
-                    { from: '呗', to: '北北' },
-                    { from: '北', to: '杯杯' },
+                    { from: '吧', to: 'BBBB' },
+                    { from: 'B', to: 'bbbb' },
+                    { from: 'b', to: '贝贝贝贝' },
+                    { from: '呗', to: '北北北北' },
+                    { from: '北', to: '杯杯杯杯' },
                     
                     { from: '基', to: 'JJ' },
                     { from: 'J', to: 'jj' },
@@ -623,8 +623,55 @@
             }
         };
 
-        // 土豆加密器逻辑
+        // 土豆加密器逻辑（还原）
         const tudouEncryptor = {
+            encrypt: function(plainText) {
+                let cipher = [];
+                for (let char of plainText) {
+                    const uniCode = char.charCodeAt(0);
+                    const binaryStr = uniCode.toString(2).padStart(16, '0');
+                    let tudouStr = '';
+                    for (let bit of binaryStr) {
+                        if (bit === '1') {
+                            tudouStr += '土';
+                        } else {
+                            tudouStr += '豆';
+                        }
+                    }
+                    cipher.push(tudouStr);
+                }
+                return cipher.join('');
+            },
+            decrypt: function(cipherText) {
+                if (!cipherText) return '';
+                // 检查密文是否只包含'土'和'豆'
+                if (!/^[土豆]+$/.test(cipherText)) {
+                    return '错误：密文格式不正确，土豆加密器的密文只能包含"土"和"豆"字符。';
+                }
+                // 检查密文长度是否是16的倍数
+                if (cipherText.length % 16 !== 0) {
+                    return '错误：密文长度不正确，土豆加密器的密文长度必须是16的倍数。';
+                }
+                let plain = [];
+                for (let i = 0; i < cipherText.length; i += 16) {
+                    const tudouStr = cipherText.slice(i, i + 16);
+                    let binaryStr = '';
+                    for (let char of tudouStr) {
+                        if (char === '土') {
+                            binaryStr += '1';
+                        } else {
+                            binaryStr += '0';
+                        }
+                    }
+                    const uniCode = parseInt(binaryStr, 2);
+                    plain.push(String.fromCharCode(uniCode));
+                }
+                return plain.join('');
+            }
+        };
+
+        // 蔡机杯加密Pro逻辑
+        const caijibeiProEncryptor = {
             encrypt: function(plainText) {
                 let cipher = [];
                 for (let char of plainText) {
@@ -632,22 +679,77 @@
                     const num1 = Math.floor(uniCode / 10000);
                     const num2 = Math.floor((uniCode % 10000) / 100);
                     const num3 = uniCode % 100;
-                    cipher.push('土'.repeat(num1 + 1));
-                    cipher.push('豆'.repeat(num2 + 1));
-                    cipher.push('土'.repeat(num3 + 1));
+                    
+                    let caiStr = '蔡'.repeat(num1 + 1);
+                    let jiStr = '机'.repeat(num2 + 1);
+                    let beiStr = '杯'.repeat(num3 + 1);
+                    
+                    // 应用新的压缩规则（三进一）
+                    caiStr = this.compress(caiStr);
+                    jiStr = this.compress(jiStr);
+                    beiStr = this.compress(beiStr);
+                    
+                    cipher.push(caiStr, jiStr, beiStr);
                 }
                 return cipher.join('');
             },
+
+            compress: function(str) {
+                // 定义压缩映射（三进一）
+                const compressMap = [
+                    { from: '杯杯杯', to: '北' },
+                    { from: '北北北', to: '呗' },
+                    { from: '贝贝贝', to: 'b' },
+                    { from: 'bbb', to: 'B' },
+                    { from: 'BBB', to: '吧' },
+                    
+                    { from: '机机机', to: '機' },
+                    { from: '機機機', to: '姬' },
+                    { from: '姬姬姬', to: 'j' },
+                    { from: 'jjj', to: 'J' },
+                    { from: 'JJJ', to: '基' },
+                    
+                    { from: '蔡蔡蔡', to: '菜' },
+                    { from: '菜菜菜', to: 'C' }
+                ];
+
+                let result = str;
+                for (let rule of compressMap) {
+                    while (result.includes(rule.from)) {
+                        result = result.replace(rule.from, rule.to);
+                    }
+                }
+                return result;
+            },
+
             decrypt: function(cipherText) {
                 if (!cipherText) return '';
-                const segments = [];
-                let currentChar = cipherText[0];
-                let currentCount = 1;
-                
-                for (let i = 1; i < cipherText.length; i++) {
-                    if (cipherText[i] === currentChar) {
-                        currentCount++;
-                    } else {
+
+                // 定义解压映射（与压缩映射相反）
+                const decompressMap = [
+                    { from: '吧', to: 'BBB' },
+                    { from: 'B', to: 'bbb' },
+                    { from: 'b', to: '贝贝贝' },
+                    { from: '呗', to: '北北北' },
+                    { from: '北', to: '杯杯杯' },
+                    
+                    { from: '基', to: 'JJJ' },
+                    { from: 'J', to: 'jjj' },
+                    { from: 'j', to: '姬姬姬' },
+                    { from: '姬', to: '機機機' },
+                    { from: '機', to: '机机机' },
+                    
+                    { from: 'C', to: '菜菜菜' },
+                    { from: '菜', to: '蔡蔡蔡' }
+                ];
+
+                let expandedText = cipherText;
+                for (let rule of decompressMap) {
+                    expandedText = expandedText.replace(new RegExp(rule.from, 'g'), rule.to);
+                }
+
+                return caijibeiEncryptor.decrypt(expandedText);
+            }
                         segments.push([currentChar, currentCount]);
                         currentChar = cipherText[i];
                         currentCount = 1;
