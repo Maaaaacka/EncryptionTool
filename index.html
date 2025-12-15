@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>神秘加密工具 - 登录</title>
+    <title>多功能加密工具 - 登录</title>
     <style>
         /* 全局样式 */
         * {
@@ -316,7 +316,7 @@
         
         <div class="form-group">
             <label class="form-label" for="pwd-input">密码</label>
-            <input type="password" class="form-input" id="pwd-input" placeholder="请输入密码" value="111111">
+            <input type="password" class="form-input" id="pwd-input" placeholder="请输入密码" value="1234">
             <div class="error-tip" id="error-tip">账号或密码错误，请重新输入</div>
         </div>
         
@@ -337,6 +337,7 @@
         <!-- 加密器选择菜单 -->
         <div class="encryptor-menu">
             <button class="encryptor-btn active" data-encryptor="caijibei">蔡机杯加密器</button>
+            <button class="encryptor-btn" data-encryptor="caijibeiPro">蔡机杯加密Pro</button>
             <button class="encryptor-btn" data-encryptor="tudou">土豆加密器</button>
         </div>
         
@@ -483,6 +484,119 @@
             });
         });
 
+        // 蔡机杯加密Pro逻辑
+        const caijibeiProEncryptor = {
+            encrypt: function(plainText) {
+                let cipher = [];
+                for (let char of plainText) {
+                    const uniCode = char.charCodeAt(0);
+                    const num1 = Math.floor(uniCode / 10000);
+                    const num2 = Math.floor((uniCode % 10000) / 100);
+                    const num3 = uniCode % 100;
+                    
+                    // 使用蔡机杯加密Pro算法
+                    let caiStr = this.compressChar('蔡', num1 + 1);
+                    let jiStr = this.compressChar('机', num2 + 1);
+                    let beiStr = this.compressChar('杯', num3 + 1);
+                    
+                    cipher.push(caiStr);
+                    cipher.push(jiStr);
+                    cipher.push(beiStr);
+                }
+                return cipher.join('');
+            },
+            
+            // 字符压缩函数
+            compressChar: function(baseChar, count) {
+                if (baseChar === '蔡') {
+                    if (count >= 8) {
+                        const cCount = Math.floor(count / 8);
+                        const caiCount = count % 8;
+                        return 'C'.repeat(cCount) + this.compressCai(caiCount);
+                    } else {
+                        return this.compressCai(count);
+                    }
+                } else if (baseChar === '机') {
+                    if (count >= 8) {
+                        const jCount = Math.floor(count / 8);
+                        const jiCount = count % 8;
+                        return 'J'.repeat(jCount) + this.compressJi(jiCount);
+                    } else {
+                        return this.compressJi(count);
+                    }
+                } else if (baseChar === '杯') {
+                    if (count >= 8) {
+                        const bCount = Math.floor(count / 8);
+                        const beiCount = count % 8;
+                        return 'B'.repeat(bCount) + this.compressBei(beiCount);
+                    } else {
+                        return this.compressBei(count);
+                    }
+                }
+                return baseChar.repeat(count);
+            },
+            
+            // 蔡字符压缩
+            compressCai: function(count) {
+                if (count >= 4) {
+                    const caiCount = count % 2;
+                    return '菜'.repeat(Math.floor(count / 2)) + '蔡'.repeat(caiCount);
+                } else if (count >= 2) {
+                    return '菜'.repeat(Math.floor(count / 2)) + '蔡'.repeat(count % 2);
+                } else {
+                    return '蔡'.repeat(count);
+                }
+            },
+            
+            // 机字符压缩
+            compressJi: function(count) {
+                if (count >= 6) {
+                    const jiCount = count % 2;
+                    return 'J'.repeat(1) + '機'.repeat(Math.floor((count - 2) / 2)) + '机'.repeat(jiCount);
+                } else if (count >= 4) {
+                    const jiCount = count % 2;
+                    return '機'.repeat(Math.floor(count / 2)) + '机'.repeat(jiCount);
+                } else if (count >= 2) {
+                    return '機'.repeat(Math.floor(count / 2)) + '机'.repeat(count % 2);
+                } else {
+                    return '机'.repeat(count);
+                }
+            },
+            
+            // 杯字符压缩
+            compressBei: function(count) {
+                if (count >= 6) {
+                    const beiCount = count % 2;
+                    return 'B'.repeat(1) + '呗'.repeat(Math.floor((count - 2) / 2)) + '北'.repeat(beiCount);
+                } else if (count >= 4) {
+                    const beiCount = count % 2;
+                    return '呗'.repeat(Math.floor(count / 2)) + '北'.repeat(beiCount);
+                } else if (count >= 2) {
+                    return '北'.repeat(Math.floor(count / 2)) + '杯'.repeat(count % 2);
+                } else {
+                    return '杯'.repeat(count);
+                }
+            },
+            
+            decrypt: function(cipherText) {
+                if (!cipherText) return '';
+                
+                // 先将压缩字符还原为原始字符
+                let expandedText = cipherText
+                    .replace(/C/g, '菜菜')
+                    .replace(/菜/g, '蔡蔡')
+                    .replace(/J/g, '極極')
+                    .replace(/極/g, '機機')
+                    .replace(/機/g, '机机')
+                    .replace(/B/g, '呗呗')
+                    .replace(/呗/g, '北北')
+                    .replace(/北/g, '杯杯');
+                
+                // 使用原始蔡机杯解密算法
+                return caijibeiEncryptor.decrypt(expandedText);
+            }
+        };
+
         // 蔡机杯加密器逻辑
         const caijibeiEncryptor = {
             encrypt: function(plainText) {
@@ -549,9 +663,9 @@
                     const num1 = Math.floor(uniCode / 10000);
                     const num2 = Math.floor((uniCode % 10000) / 100);
                     const num3 = uniCode % 100;
-                    cipher.push('小'.repeat(num1 + 1));
-                    cipher.push('土'.repeat(num2 + 1));
-                    cipher.push('豆'.repeat(num3 + 1));
+                    cipher.push('土'.repeat(num1 + 1));
+                    cipher.push('豆'.repeat(num2 + 1));
+                    cipher.push('土'.repeat(num3 + 1));
                 }
                 return cipher.join('');
             },
@@ -579,7 +693,7 @@
                         const segDou = segments[i+1];
                         const segTu2 = segments[i+2];
                         
-                        if (segTu[0] !== '小' || segDou[0] !== '土' || segTu2[0] !== '豆') {
+                        if (segTu[0] !== '土' || segDou[0] !== '豆' || segTu2[0] !== '土') {
                             continue;
                         }
                         
