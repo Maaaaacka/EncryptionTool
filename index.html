@@ -517,7 +517,11 @@
                         return this.compressCai(count);
                     }
                 } else if (baseChar === '机') {
-                    if (count >= 8) {
+                    if (count >= 16) {
+                        const jCount = Math.floor(count / 16);
+                        const jiCount = count % 16;
+                        return '基'.repeat(jCount) + this.compressJi(jiCount);
+                    } else if (count >= 8) {
                         const jCount = Math.floor(count / 8);
                         const jiCount = count % 8;
                         return 'J'.repeat(jCount) + this.compressJi(jiCount);
@@ -525,7 +529,11 @@
                         return this.compressJi(count);
                     }
                 } else if (baseChar === '杯') {
-                    if (count >= 8) {
+                    if (count >= 16) {
+                        const bCount = Math.floor(count / 16);
+                        const beiCount = count % 16;
+                        return '吧'.repeat(bCount) + this.compressBei(beiCount);
+                    } else if (count >= 8) {
                         const bCount = Math.floor(count / 8);
                         const beiCount = count % 8;
                         return 'B'.repeat(bCount) + this.compressBei(beiCount);
@@ -552,10 +560,10 @@
             compressJi: function(count) {
                 if (count >= 6) {
                     const jiCount = count % 2;
-                    return 'J'.repeat(1) + '機'.repeat(Math.floor((count - 2) / 2)) + '机'.repeat(jiCount);
+                    return 'j'.repeat(1) + '姬'.repeat(Math.floor((count - 2) / 2)) + '機'.repeat(jiCount);
                 } else if (count >= 4) {
                     const jiCount = count % 2;
-                    return '機'.repeat(Math.floor(count / 2)) + '机'.repeat(jiCount);
+                    return '姬'.repeat(Math.floor(count / 2)) + '機'.repeat(jiCount);
                 } else if (count >= 2) {
                     return '機'.repeat(Math.floor(count / 2)) + '机'.repeat(count % 2);
                 } else {
@@ -567,10 +575,10 @@
             compressBei: function(count) {
                 if (count >= 6) {
                     const beiCount = count % 2;
-                    return 'B'.repeat(1) + '呗'.repeat(Math.floor((count - 2) / 2)) + '北'.repeat(beiCount);
+                    return 'b'.repeat(1) + '贝'.repeat(Math.floor((count - 2) / 2)) + '呗'.repeat(beiCount);
                 } else if (count >= 4) {
                     const beiCount = count % 2;
-                    return '呗'.repeat(Math.floor(count / 2)) + '北'.repeat(beiCount);
+                    return '贝'.repeat(Math.floor(count / 2)) + '呗'.repeat(beiCount);
                 } else if (count >= 2) {
                     return '北'.repeat(Math.floor(count / 2)) + '杯'.repeat(count % 2);
                 } else {
@@ -581,16 +589,24 @@
             decrypt: function(cipherText) {
                 if (!cipherText) return '';
                 
-                // 先将压缩字符还原为原始字符
+                // 先将压缩字符还原为原始字符（反向顺序还原）
                 let expandedText = cipherText
-                    .replace(/C/g, '菜菜')
-                    .replace(/菜/g, '蔡蔡')
-                    .replace(/J/g, '極極')
-                    .replace(/極/g, '機機')
-                    .replace(/機/g, '机机')
+                    // B系列还原
+                    .replace(/吧/g, '贝贝')
+                    .replace(/贝/g, 'bb')
+                    .replace(/b/g, 'BB')
                     .replace(/B/g, '呗呗')
                     .replace(/呗/g, '北北')
-                    .replace(/北/g, '杯杯');
+                    .replace(/北/g, '杯杯')
+                    // J系列还原
+                    .replace(/基/g, '姬姬')
+                    .replace(/姬/g, 'jj')
+                    .replace(/j/g, 'JJ')
+                    .replace(/J/g, '姬姬')
+                    .replace(/機/g, '机机')
+                    // C系列还原
+                    .replace(/C/g, '菜菜')
+                    .replace(/菜/g, '蔡蔡');
                 
                 // 使用原始蔡机杯解密算法
                 return caijibeiEncryptor.decrypt(expandedText);
