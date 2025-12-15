@@ -484,7 +484,7 @@
             });
         });
 
-        // 蔡机杯加密Pro逻辑（重构）
+        // 蔡机杯加密Pro逻辑（重构）（重构）
         const caijibeiProEncryptor = {
             encrypt: function(plainText) {
                 let cipher = [];
@@ -509,13 +509,13 @@
             },
 
             compress: function(str) {
-                // 定义压缩映射
+                // 定义压缩映射（杯字四进一，其他二进一）
                 const compressMap = [
-                    { from: '杯杯', to: '北' },
-                    { from: '北北', to: '呗' },
-                    { from: '贝贝', to: 'b' },
-                    { from: 'bb', to: 'B' },
-                    { from: 'BB', to: '吧' },
+                    { from: '杯杯杯杯', to: '北' },
+                    { from: '北北北北', to: '呗' },
+                    { from: '贝贝贝贝', to: 'b' },
+                    { from: 'bbbb', to: 'B' },
+                    { from: 'BBBB', to: '吧' },
                     
                     { from: '机机', to: '機' },
                     { from: '機機', to: '姬' },
@@ -541,11 +541,11 @@
 
                 // 定义解压映射（与压缩映射相反）
                 const decompressMap = [
-                    { from: '吧', to: 'BB' },
-                    { from: 'B', to: 'bb' },
-                    { from: 'b', to: '贝贝' },
-                    { from: '呗', to: '北北' },
-                    { from: '北', to: '杯杯' },
+                    { from: '吧', to: 'BBBB' },
+                    { from: 'B', to: 'bbbb' },
+                    { from: 'b', to: '贝贝贝贝' },
+                    { from: '呗', to: '北北北北' },
+                    { from: '北', to: '杯杯杯杯' },
                     
                     { from: '基', to: 'JJ' },
                     { from: 'J', to: 'jj' },
