@@ -516,6 +516,7 @@
                     { from: '贝贝贝贝', to: 'b' },
                     { from: 'bbbb', to: 'B' },
                     { from: 'BBBB', to: '吧' },
+                    { from: '呗呗呗呗', to: '八' },
                     
                     { from: '机机', to: '機' },
                     { from: '機機', to: '姬' },
@@ -541,6 +542,7 @@
 
                 // 定义解压映射（与压缩映射相反）
                 const decompressMap = [
+                    { from: '八', to: '呗呗呗呗' },
                     { from: '吧', to: 'BBBB' },
                     { from: 'B', to: 'bbbb' },
                     { from: 'b', to: '贝贝贝贝' },
